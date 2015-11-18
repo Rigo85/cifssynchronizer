@@ -1,0 +1,61 @@
+/**
+ * Author Rigoberto Leander Salgado Reyes <rlsalgado2006@gmail.com>
+ * <p>
+ * Copyright 2015 by Rigoberto Leander Salgado Reyes.
+ * <p>
+ * This program is licensed to you under the terms of version 3 of the
+ * GNU Affero General Public License. This program is distributed WITHOUT
+ * ANY EXPRESS OR IMPLIED WARRANTY, INCLUDING THOSE OF NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
+ * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
+ */
+
+allprojects {
+    apply plugin: 'java'
+    group 'org.cifssynchronizer'
+    version '0.1'
+
+    repositories {
+        maven { url = 'http://maven.prod.uci.cu/nexus/content/groups/public/' }
+        maven { url = 'http://maven.prod.uci.cu/nexus/content/repositories/' }
+        maven { url = 'http://maven.prod.uci.cu/nexus/content/repositories/clojars.org/' }
+    }
+
+}
+
+project(':dao') {
+    sourceCompatibility = 1.8
+
+    dependencies {
+		compile 'org.eclipse.persistence:eclipselink:2.5.2'
+		compile 'org.eclipse.persistence:javax.persistence:2.1.0'
+		compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:2.5.2'
+		compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen:2.5.0-M6'
+		compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.5.2'
+		compile 'org.apache.derby:derby:10.12.1.1'
+    }
+}
+
+project(':core') {
+    sourceCompatibility = 1.8
+
+    dependencies {
+		compile 'jcifs:jcifs:1.3.17'
+		compile 'com.google.code.gson:gson:2.4'
+		compile 'commons-codec:commons-codec:1.10'
+		compile project(':dao')
+    }
+}
+
+sourceCompatibility = 1.8
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile project(':dao')
+    compile project(':core')
+}
+
+task run(type: JavaExec) {
+    main = "org.cifssynchronizer.mvc.CIFSSynchronizerApp"
+    classpath = sourceSets.main.runtimeClasspath
+}

@@ -17,8 +17,8 @@ import javax.persistence.Persistence;
 
 
 public class DAOSynchronizer {
-    private CredentialJpaController credentialJpaController;
-    private ConfigurationJpaController configurationJpaController;
+    private final CredentialJpaController credentialJpaController;
+    private final ConfigurationJpaController configurationJpaController;
     private static DAOSynchronizer daoSynchronizer = null;
 
     private DAOSynchronizer() {

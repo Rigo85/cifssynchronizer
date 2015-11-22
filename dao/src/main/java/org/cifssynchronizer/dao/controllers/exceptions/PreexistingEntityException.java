@@ -12,7 +12,7 @@
 
 package org.cifssynchronizer.dao.controllers.exceptions;
 
-public class PreexistingEntityException extends Exception {
+class PreexistingEntityException extends Exception {
     public PreexistingEntityException(String message, Throwable cause) {
         super(message, cause);
     }

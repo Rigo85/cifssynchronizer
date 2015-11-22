@@ -46,11 +46,11 @@ import java.util.stream.Collectors;
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
 public class CIFSSynchronizerPresenter {
-    final CIFSSynchronizerView cifsSynchronizerView;
-    DAOSynchronizer daoSynchronizer;
-    UpdateService updateTask;
-    AtomicInteger counter;
-    ObservableList<DownloadTask> list;
+    private final CIFSSynchronizerView cifsSynchronizerView;
+    private final UpdateService updateTask;
+    private final AtomicInteger counter;
+    private final ObservableList<DownloadTask> list;
+    private DAOSynchronizer daoSynchronizer;
 
     public CIFSSynchronizerPresenter(CIFSSynchronizerView cifsSynchronizerView) {
         this.cifsSynchronizerView = cifsSynchronizerView;
@@ -90,11 +90,11 @@ public class CIFSSynchronizerPresenter {
         cifsSynchronizerView.settings.setOnAction(e -> settingsAction());
 
         cifsSynchronizerView.searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(!newValue.isEmpty()){
+            if (!newValue.isEmpty()) {
                 final FilteredList<DownloadTask> filtered =
                         list.filtered(dt -> dt.getName().toLowerCase().contains(newValue.trim().toLowerCase()));
                 cifsSynchronizerView.downloadsTableView.setItems(filtered);
-            }else{
+            } else {
                 cifsSynchronizerView.downloadsTableView.setItems(list);
             }
         });
@@ -155,7 +155,7 @@ public class CIFSSynchronizerPresenter {
         credentialsTab.setGraphic(icon);
         credentialsTab.setClosable(false);
         CredentialsPanelView credentialsPanelView = new CredentialsPanelView();
-        CredentialsPanelPresenter credentialsPanelPresenter = new CredentialsPanelPresenter(credentialsPanelView);
+        new CredentialsPanelPresenter(credentialsPanelView);
         credentialsTab.setContent(credentialsPanelView);
 
         SettingsPanel.getTabs().addAll(configurationTab, credentialsTab);

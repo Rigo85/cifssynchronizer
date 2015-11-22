@@ -34,7 +34,7 @@ public class DownloadTableViewPresenter {
     private final DownloadManagerPresenter managerPresenter;
     private final ScrollPane scrollPane;
     private Dialog dialog;
-    public SimpleBooleanProperty managerIsVisible;
+    public final SimpleBooleanProperty managerIsVisible;
 
     public DownloadTableViewPresenter(DownloadsTableView tableView) {
         this.tableView = tableView;

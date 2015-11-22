@@ -19,7 +19,7 @@ import rx.Subscriber;
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
 public class UpdateService extends Service<SmbFile> {
-    public SimpleBooleanProperty canContinue;
+    public final SimpleBooleanProperty canContinue;
     private CIFSSynchronizerCore cifsSynchronizerCore;
 
     public UpdateService() {

@@ -34,7 +34,7 @@ public class CredentialJpaController implements Serializable {
         this.emf = emf;
     }
 
-    public EntityManager getEntityManager() {
+    private EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
@@ -52,7 +52,7 @@ public class CredentialJpaController implements Serializable {
         }
     }
 
-    public void edit(Credential credential) throws NonexistentEntityException, Exception {
+    public void edit(Credential credential) throws Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -104,6 +104,7 @@ public class CredentialJpaController implements Serializable {
         return findCredentialEntities(false, maxResults, firstResult);
     }
 
+    @SuppressWarnings("unchecked")
     private List<Credential> findCredentialEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
@@ -129,6 +130,7 @@ public class CredentialJpaController implements Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public int getCredentialCount() {
         EntityManager em = getEntityManager();
         try {

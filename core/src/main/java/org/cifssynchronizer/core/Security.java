@@ -31,7 +31,7 @@ public class Security {
             byte[] encrypted = cipher.doFinal(value.getBytes());
 
             str = Base64.encodeBase64String(encrypted);
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
 
         return str;
@@ -47,7 +47,7 @@ public class Security {
             byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
 
             str = new String(original);
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
 
         return str;

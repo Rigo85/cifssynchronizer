@@ -26,7 +26,7 @@ import org.cifssynchronizer.mvc.model.DownloadTask;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class DownloadPanelPresenter {
+class DownloadPanelPresenter {
     private final DownloadPanelView downloadPanelView;
     private final DownloadTask downloadTask;
 

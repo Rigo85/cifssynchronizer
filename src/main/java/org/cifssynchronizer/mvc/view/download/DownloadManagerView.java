@@ -15,7 +15,7 @@ import javafx.scene.layout.GridPane;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class DownloadManagerView extends GridPane {
+class DownloadManagerView extends GridPane {
     public DownloadManagerView() {
         final ColumnConstraints cc = new ColumnConstraints();
         cc.setPercentWidth(100);

@@ -25,13 +25,13 @@ import java.time.LocalDate;
  */
 public class DownloadTask extends Task<SimpleLongProperty> {
     final private SimpleLongProperty result;
-    NtlmPasswordAuthentication auth;
-    int number;
-    String name;
-    String smbPath;
-    long size;
-    LocalDate lastModification;
-    String downloadPath;
+    private final NtlmPasswordAuthentication auth;
+    private final int number;
+    private final String name;
+    private final String smbPath;
+    private final long size;
+    private final LocalDate lastModification;
+    private final String downloadPath;
 
     public DownloadTask(NtlmPasswordAuthentication auth, int number, String name, String smbPath,
                         long size, LocalDate lastModification, String downloadPath) {
@@ -77,7 +77,7 @@ public class DownloadTask extends Task<SimpleLongProperty> {
         return new DownloadTask(auth, number, name, smbPath, size, lastModification, downloadPath);
     }
 
-    public NtlmPasswordAuthentication getAuth() {
+    private NtlmPasswordAuthentication getAuth() {
         return auth;
     }
 

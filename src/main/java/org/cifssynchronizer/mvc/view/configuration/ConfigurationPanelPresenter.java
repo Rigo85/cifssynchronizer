@@ -22,7 +22,7 @@ import org.cifssynchronizer.dao.models.Configuration;
  */
 public class ConfigurationPanelPresenter {
     public final ConfigurationPanelView configurationPanelView;
-    DAOSynchronizer daoSynchronizer;
+    private final DAOSynchronizer daoSynchronizer;
 
     public ConfigurationPanelPresenter(ConfigurationPanelView configurationPanelView) {
         this.configurationPanelView = configurationPanelView;

@@ -109,19 +109,11 @@ public class Configuration implements Serializable {
             return false;
         }
         final Configuration other = (Configuration) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        if (!Objects.equals(this.smbPath, other.smbPath)) {
-            return false;
-        }
-        if (this.lastSynchronization != other.lastSynchronization) {
-            return false;
-        }
-        if (!Objects.equals(this.downloadPath, other.downloadPath)) {
-            return false;
-        }
-        return Objects.equals(this.credential, other.credential);
+        return Objects.equals(this.id, other.id) &&
+                Objects.equals(this.smbPath, other.smbPath) &&
+                this.lastSynchronization == other.lastSynchronization &&
+                Objects.equals(this.downloadPath, other.downloadPath) &&
+                Objects.equals(this.credential, other.credential);
     }
 
     @Override

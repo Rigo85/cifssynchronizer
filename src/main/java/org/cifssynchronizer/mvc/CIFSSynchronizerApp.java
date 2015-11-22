@@ -22,9 +22,6 @@ import org.cifssynchronizer.mvc.view.CIFSSynchronizerView;
  */
 public class CIFSSynchronizerApp extends Application {
 
-    CIFSSynchronizerView synchronizerView;
-    CIFSSynchronizerPresenter synchronizerPresenter;
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -32,8 +29,8 @@ public class CIFSSynchronizerApp extends Application {
     @Override
     public void start(Stage stage) {
         //todo change from *.png to *.svg
-        synchronizerView = new CIFSSynchronizerView();
-        synchronizerPresenter = new CIFSSynchronizerPresenter(synchronizerView);
+        CIFSSynchronizerView synchronizerView = new CIFSSynchronizerView();
+        new CIFSSynchronizerPresenter(synchronizerView);
 
         Scene scene = new Scene(synchronizerView);
         stage.setScene(scene);

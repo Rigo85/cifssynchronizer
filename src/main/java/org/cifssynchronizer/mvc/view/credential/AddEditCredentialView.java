@@ -23,10 +23,10 @@ import org.cifssynchronizer.dao.models.Credential;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class AddEditCredentialView extends GridPane {
-    TextField domainText;
-    TextField usernameText;
-    PasswordField passwordText;
+class AddEditCredentialView extends GridPane {
+    final TextField domainText;
+    final TextField usernameText;
+   final  PasswordField passwordText;
 
     public AddEditCredentialView(Credential credential) {
         super();

@@ -26,7 +26,7 @@ import javax.persistence.RollbackException;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class AddEditCredentialPresenter {
+class AddEditCredentialPresenter {
     private final Credential credential;
     private final AddEditCredentialView credentialView;
 

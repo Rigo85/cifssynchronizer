@@ -24,13 +24,12 @@ import org.cifssynchronizer.mvc.model.DownloadTask;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class DownloadPanelView extends VBox {
-    Label downloadNameLabel;
-    ProgressBar downloadProgressBar;
-    Button restartButton;
-    Button stopButton;
+class DownloadPanelView extends VBox {
+    final ProgressBar downloadProgressBar;
+    final Button restartButton;
+    final Button stopButton;
     Service<SimpleLongProperty> service;
-    SimpleBooleanProperty finish;
+    final SimpleBooleanProperty finish;
 
     public DownloadPanelView(DownloadTask downloadTask) {
         service = null;
@@ -40,7 +39,7 @@ public class DownloadPanelView extends VBox {
         downloadProgressBar = new ProgressBar();
         downloadProgressBar.prefWidthProperty().bind(this.widthProperty());
 
-        downloadNameLabel = new Label(downloadTask.getName());
+        Label downloadNameLabel = new Label(downloadTask.getName());
 
         restartButton = new Button();
         restartButton.setGraphic(new ImageView(

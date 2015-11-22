@@ -21,13 +21,13 @@ import java.time.LocalDate;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class AddEditConfigurationView extends GridPane {
-    TextField smbPathText;
-    TextField downloadPathText;
-    DatePicker lastSynchronizationText;
-    ComboBox<Credential> credentialComboBox;
-    Button resetButton;
-    Button dirChooser;
+class AddEditConfigurationView extends GridPane {
+    final TextField smbPathText;
+    final TextField downloadPathText;
+    final DatePicker lastSynchronizationText;
+    final ComboBox<Credential> credentialComboBox;
+    final Button resetButton;
+    final Button dirChooser;
 
     public AddEditConfigurationView(Configuration configuration) {
         super();

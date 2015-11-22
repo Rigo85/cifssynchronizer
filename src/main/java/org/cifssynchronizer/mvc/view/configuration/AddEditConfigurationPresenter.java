@@ -31,7 +31,7 @@ import java.util.Locale;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class AddEditConfigurationPresenter {
+class AddEditConfigurationPresenter {
     private final Configuration configuration;
     private final AddEditConfigurationView configurationView;
     private final SimpleBooleanProperty change;

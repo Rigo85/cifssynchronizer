@@ -24,16 +24,15 @@ import org.cifssynchronizer.mvc.view.download.DownloadsTableView;
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
 public class CIFSSynchronizerView extends BorderPane {
-    HBox toolBar;
+    private HBox toolBar;
     ComboBox<Configuration> configurationComboBox;
-    DownloadsTableView downloadsTableView;
-    DownloadTableViewPresenter downloadTableViewPresenter;
-    MenuBar menuBar;
+    final DownloadsTableView downloadsTableView;
+    final DownloadTableViewPresenter downloadTableViewPresenter;
     MenuItem settings;
     MenuItem exit;
     MenuItem about;
     Button updateButton;
-    Button showDownloadManager;
+    final Button showDownloadManager;
     TextField searchTextField;
 
     public CIFSSynchronizerView() {
@@ -94,7 +93,7 @@ public class CIFSSynchronizerView extends BorderPane {
     }
 
     private void createMenus() {
-        menuBar = new MenuBar();
+        MenuBar menuBar = new MenuBar();
 
         Menu file = new Menu("_File");
         file.setMnemonicParsing(true);

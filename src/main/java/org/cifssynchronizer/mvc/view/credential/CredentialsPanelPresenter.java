@@ -22,7 +22,7 @@ import org.cifssynchronizer.dao.models.Credential;
  */
 public class CredentialsPanelPresenter {
     private final CredentialsPanelView credentialsPanelView;
-    DAOSynchronizer daoSynchronizer;
+    private final DAOSynchronizer daoSynchronizer;
 
     public CredentialsPanelPresenter(CredentialsPanelView credentialsPanelView) {
         this.credentialsPanelView = credentialsPanelView;
@@ -99,7 +99,7 @@ public class CredentialsPanelPresenter {
         updateTableView();
     }
 
-    void updateTableView() {
+    private void updateTableView() {
         credentialsPanelView.credentialTableView.getItems().clear();
         credentialsPanelView.credentialTableView.getItems().addAll(
                 daoSynchronizer.getCredentialJpaController().findCredentialEntities());

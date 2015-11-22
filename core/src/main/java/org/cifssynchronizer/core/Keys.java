@@ -16,10 +16,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Keys {
     @SerializedName("key1")
-    String key1 = "";
+    private String key1 = "";
 
     @SerializedName("key2")
-    String key2 = "";
+    private String key2 = "";
 
     public Keys(String key1, String key2) {
         this.key1 = key1;

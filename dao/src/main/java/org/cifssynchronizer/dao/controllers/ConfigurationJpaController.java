@@ -33,7 +33,7 @@ public class ConfigurationJpaController implements Serializable {
         this.emf = emf;
     }
 
-    public EntityManager getEntityManager() {
+    private EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
@@ -51,7 +51,7 @@ public class ConfigurationJpaController implements Serializable {
         }
     }
 
-    public void edit(Configuration configuration) throws NonexistentEntityException, Exception {
+    public void edit(Configuration configuration) throws Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -103,6 +103,7 @@ public class ConfigurationJpaController implements Serializable {
         return findConfigurationEntities(false, maxResults, firstResult);
     }
 
+    @SuppressWarnings("unchecked")
     private List<Configuration> findConfigurationEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
@@ -128,6 +129,7 @@ public class ConfigurationJpaController implements Serializable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public int getConfigurationCount() {
         EntityManager em = getEntityManager();
         try {

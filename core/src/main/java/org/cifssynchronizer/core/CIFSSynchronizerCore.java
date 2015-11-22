@@ -27,9 +27,9 @@ import java.util.stream.Stream;
 
 
 public class CIFSSynchronizerCore {
-    private Configuration configuration;
-    private List<String> errorList;
-    private NtlmPasswordAuthentication ntlmPasswordAuthentication;
+    private final Configuration configuration;
+    private final List<String> errorList;
+    private final NtlmPasswordAuthentication ntlmPasswordAuthentication;
     private String smbPath;
 
     public CIFSSynchronizerCore(Configuration configuration) {

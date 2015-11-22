@@ -63,31 +63,33 @@ public class DownloadPanelPresenter {
                 new AudioClip(getClass().getClassLoader().getResource("sounds/done.wav").toExternalForm()).play());
 
         downloadPanelView.service.exceptionProperty().addListener((prop, oldValue, newValue) -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(String.format("The following errors was found when \ndownloading %s", downloadTask.getSmbPath()));
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(
-                    new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
-            Label label = new Label("The errors was:");
+            if (newValue != null && newValue.getMessage() != null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(String.format("The following errors was found when \ndownloading %s", downloadTask.getSmbPath()));
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(
+                        new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
+                Label label = new Label("The errors was:");
 
-            TextArea textArea = new TextArea(newValue != null && newValue.getMessage() != null ? newValue.getMessage() : "No error message!");
-            textArea.setEditable(false);
-            textArea.setWrapText(true);
+                TextArea textArea = new TextArea(newValue.getMessage());
+                textArea.setEditable(false);
+                textArea.setWrapText(true);
 
-            textArea.setMaxWidth(Double.MAX_VALUE);
-            textArea.setMaxHeight(Double.MAX_VALUE);
-            GridPane.setVgrow(textArea, Priority.ALWAYS);
-            GridPane.setHgrow(textArea, Priority.ALWAYS);
+                textArea.setMaxWidth(Double.MAX_VALUE);
+                textArea.setMaxHeight(Double.MAX_VALUE);
+                GridPane.setVgrow(textArea, Priority.ALWAYS);
+                GridPane.setHgrow(textArea, Priority.ALWAYS);
 
-            GridPane expContent = new GridPane();
-            expContent.setMaxWidth(Double.MAX_VALUE);
-            expContent.add(label, 0, 0);
-            expContent.add(textArea, 0, 1);
+                GridPane expContent = new GridPane();
+                expContent.setMaxWidth(Double.MAX_VALUE);
+                expContent.add(label, 0, 0);
+                expContent.add(textArea, 0, 1);
 
-            alert.getDialogPane().setExpandableContent(expContent);
+                alert.getDialogPane().setExpandableContent(expContent);
 
-            alert.showAndWait();
+                alert.showAndWait();
+            }
         });
     }
 }

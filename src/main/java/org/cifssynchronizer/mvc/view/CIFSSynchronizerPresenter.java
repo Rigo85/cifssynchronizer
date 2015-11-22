@@ -2,6 +2,10 @@ package org.cifssynchronizer.mvc.view;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Worker;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -45,13 +49,14 @@ public class CIFSSynchronizerPresenter {
     final CIFSSynchronizerView cifsSynchronizerView;
     DAOSynchronizer daoSynchronizer;
     UpdateService updateTask;
-    // UpdateTask updateTask;
     AtomicInteger counter;
+    ObservableList<DownloadTask> list;
 
     public CIFSSynchronizerPresenter(CIFSSynchronizerView cifsSynchronizerView) {
         this.cifsSynchronizerView = cifsSynchronizerView;
         counter = new AtomicInteger(1);
         updateTask = new UpdateService();
+        list = FXCollections.observableArrayList();
 
         try {
             daoSynchronizer = DAOSynchronizer.getInstance();
@@ -84,6 +89,16 @@ public class CIFSSynchronizerPresenter {
 
         cifsSynchronizerView.settings.setOnAction(e -> settingsAction());
 
+        cifsSynchronizerView.searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(!newValue.isEmpty()){
+                final FilteredList<DownloadTask> filtered =
+                        list.filtered(dt -> dt.getName().toLowerCase().contains(newValue.trim().toLowerCase()));
+                cifsSynchronizerView.downloadsTableView.setItems(filtered);
+            }else{
+                cifsSynchronizerView.downloadsTableView.setItems(list);
+            }
+        });
+
         cifsSynchronizerView.exit.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit?", ButtonType.YES, ButtonType.CANCEL);
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -99,7 +114,7 @@ public class CIFSSynchronizerPresenter {
             alert.setResizable(true);
             alert.getDialogPane().setPrefSize(600, 300);
             stage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
-            alert.setHeaderText("CIFS Synchronizer");
+            alert.setHeaderText("CIFS Synchronizer v0.1");
             alert.setContentText("Author Rigoberto Leander Salgado Reyes <rlsalgado2006@gmail.com>" +
                     "\n\n" +
                     "Copyright 2015 by Rigoberto Leander Salgado Reyes." +
@@ -128,6 +143,8 @@ public class CIFSSynchronizerPresenter {
         ConfigurationPanelPresenter configurationPanelPresenter = new ConfigurationPanelPresenter(configurationPanelView);
         Bindings.bindContent(cifsSynchronizerView.configurationComboBox.getItems(),
                 configurationPanelPresenter.configurationPanelView.confTableView.getItems());
+        cifsSynchronizerView.configurationComboBox.getItems().addListener((ListChangeListener<Configuration>) c ->
+                cifsSynchronizerView.configurationComboBox.setValue(null));
         configurationTab.setContent(configurationPanelView);
 
         Tab credentialsTab = new Tab("Credentials");
@@ -164,25 +181,28 @@ public class CIFSSynchronizerPresenter {
 
     private void updateAction() {
         final Configuration configuration = cifsSynchronizerView.configurationComboBox.getValue();
-        cifsSynchronizerView.downloadsTableView.getItems().clear();
+        cifsSynchronizerView.searchTextField.textProperty().setValue("");
+        cifsSynchronizerView.downloadsTableView.setItems(FXCollections.observableArrayList());
 
         if (configuration != null) {
             CIFSSynchronizerCore cifsSynchronizerCore = new CIFSSynchronizerCore(configuration);
             updateTask.setCifsSynchronizerCore(cifsSynchronizerCore);
 
-            updateTask.valueProperty().addListener((observable, oldValue, sf) -> {
-                if (sf != null) {
-                    try {
-                        final DownloadTask task = new DownloadTask(cifsSynchronizerCore.getNtlmPasswordAuthentication(),
-                                counter.getAndIncrement(), sf.getName(), sf.getCanonicalPath(), sf.length(),
-                                new Date(sf.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-                                configuration.getDownloadPath());
-                        cifsSynchronizerView.downloadsTableView.getItems().add(task);
-                        updateTask.canContinue.setValue(true);
-                    } catch (SmbException ignored) {
+            if (updateTask.getState() == Worker.State.READY) {
+                updateTask.valueProperty().addListener((observable, oldValue, sf) -> {
+                    if (sf != null) {
+                        try {
+                            final DownloadTask task = new DownloadTask(cifsSynchronizerCore.getNtlmPasswordAuthentication(),
+                                    counter.getAndIncrement(), sf.getName(), sf.getCanonicalPath(), sf.length(),
+                                    new Date(sf.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                                    configuration.getDownloadPath());
+                            cifsSynchronizerView.downloadsTableView.getItems().add(task);
+                            updateTask.canContinue.setValue(true);
+                        } catch (SmbException ignored) {
+                        }
                     }
-                }
-            });
+                });
+            }
 
             updateTask.setOnSucceeded(e -> onSucceedUpdate(configuration, cifsSynchronizerCore));
             counter.set(1);
@@ -195,6 +215,8 @@ public class CIFSSynchronizerPresenter {
     }
 
     private void onSucceedUpdate(Configuration configuration, CIFSSynchronizerCore cifsSynchronizerCore) {
+        list.clear();
+        list.addAll(cifsSynchronizerView.downloadsTableView.getItems());
         final List<String> errorList = cifsSynchronizerCore.getErrorList();
         if (!errorList.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

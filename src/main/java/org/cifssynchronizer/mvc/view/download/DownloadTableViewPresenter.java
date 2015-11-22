@@ -55,12 +55,12 @@ public class DownloadTableViewPresenter {
                     final SimpleBooleanProperty addDownload = new SimpleBooleanProperty(true);
                     if (fileExist(tableView.getSelectionModel().getSelectedItem())) {
                         Alert alert = new Alert(Alert.AlertType.WARNING,
-                                "Destination file exist, do you want to overwrite it?", ButtonType.OK, ButtonType.CANCEL);
+                                "Destination file exist, do you want to overwrite it?", ButtonType.YES, ButtonType.NO);
                         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
                         alert.setResizable(true);
                         stage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
                         alert.setTitle("Warning");
-                        alert.showAndWait().filter(b -> b != ButtonType.OK).ifPresent(b -> addDownload.set(false));
+                        alert.showAndWait().filter(b -> b != ButtonType.YES).ifPresent(b -> addDownload.set(false));
                     }
 
                     if (addDownload.get()) {

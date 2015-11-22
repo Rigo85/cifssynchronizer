@@ -34,6 +34,7 @@ public class CIFSSynchronizerView extends BorderPane {
     MenuItem about;
     Button updateButton;
     Button showDownloadManager;
+    TextField searchTextField;
 
     public CIFSSynchronizerView() {
         super();
@@ -71,7 +72,8 @@ public class CIFSSynchronizerView extends BorderPane {
         configurationComboBox = new ComboBox<>();
         configurationComboBox.setPrefWidth(250);
 
-        TextField searchTextField = new TextField();
+        searchTextField = new TextField();
+        searchTextField.setPromptText("Search file");
         searchTextField.setPrefWidth(250);
 
         Label searchLabel = new Label();

@@ -53,7 +53,6 @@ public class UpdateService extends Service<SmbFile> {
                         public void onNext(SmbFile sf) {
                             canContinue.set(false);
                             updateValue(sf);
-
                             while (!canContinue.getValue()) {
                             }
                             request(1);

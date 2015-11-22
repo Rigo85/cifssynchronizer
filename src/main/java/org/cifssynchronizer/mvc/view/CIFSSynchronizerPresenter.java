@@ -89,6 +89,7 @@ public class CIFSSynchronizerPresenter {
 
         cifsSynchronizerView.settings.setOnAction(e -> settingsAction());
 
+        cifsSynchronizerView.searchTextField.disableProperty().bind(updateTask.stateProperty().isEqualTo(Worker.State.RUNNING));
         cifsSynchronizerView.searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 final FilteredList<DownloadTask> filtered =

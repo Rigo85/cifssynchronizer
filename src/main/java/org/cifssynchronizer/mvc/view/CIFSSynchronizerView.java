@@ -33,12 +33,20 @@ public class CIFSSynchronizerView extends BorderPane {
     MenuItem exit;
     MenuItem about;
     Button updateButton;
+    Button showDownloadManager;
 
     public CIFSSynchronizerView() {
         super();
 
         downloadsTableView = new DownloadsTableView();
         downloadTableViewPresenter = new DownloadTableViewPresenter(downloadsTableView);
+
+        showDownloadManager = new Button("Show Download Manager");
+        VBox bottomPanel = new VBox();
+        VBox.setMargin(showDownloadManager, new Insets(0, 8, 8, 8));
+        bottomPanel.getChildren().add(showDownloadManager);
+        setBottom(bottomPanel);
+
         createMenus();
         createCenterPanel();
     }

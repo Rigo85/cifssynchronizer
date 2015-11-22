@@ -34,18 +34,21 @@ public class AddEditCredentialView extends GridPane {
         domainText = new TextField();
         domainText.setPrefWidth(250);
         domainText.setText(credential != null ? credential.getDomainName() : "");
+        domainText.setPromptText("Domain");
         Platform.runLater(domainText::requestFocus);
 
         Label usernameLabel = new Label("Username:");
         usernameText = new TextField();
         usernameText.setPrefWidth(250);
         usernameText.setText(credential != null ? credential.getUserName() : "");
+        usernameText.setPromptText("Username");
 
         Label passwordLabel = new Label("Password:");
         passwordText = new PasswordField();
         passwordText.setPrefWidth(250);
         Keys keys = Utils.loadKeys();
         passwordText.setText(credential != null && keys != null ? Security.decrypt(keys.getKey1(), keys.getKey2(), credential.getPassword()) : "");
+        passwordText.setPromptText("Password");
 
         setHgap(10);
         setVgap(10);

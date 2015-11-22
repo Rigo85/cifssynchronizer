@@ -31,6 +31,7 @@ public class CIFSSynchronizerApp extends Application {
 
     @Override
     public void start(Stage stage) {
+        //todo change from *.png to *.svg
         synchronizerView = new CIFSSynchronizerView();
         synchronizerPresenter = new CIFSSynchronizerPresenter(synchronizerView);
 
@@ -40,6 +41,7 @@ public class CIFSSynchronizerApp extends Application {
 
         stage.setMaximized(true);
 
+        //todo check the downloads in progress.
         stage.setOnCloseRequest(event -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                     "Are you sure you want to exit?", ButtonType.YES, ButtonType.CANCEL);

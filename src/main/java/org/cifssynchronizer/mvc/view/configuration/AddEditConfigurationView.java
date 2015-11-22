@@ -36,6 +36,7 @@ public class AddEditConfigurationView extends GridPane {
         smbPathText.setPrefWidth(250);
         smbPathText.setText(configuration != null ? configuration.getSmbPath() : "");
         Platform.runLater(smbPathText::requestFocus);
+        smbPathText.setPromptText("smb://address/share");
 
         Label lastSynchLabel = new Label("Last Synchronization:");
         lastSynchronizationText = new DatePicker(LocalDate.ofEpochDay(configuration == null ? 0l : configuration.getLastSynchronization()));

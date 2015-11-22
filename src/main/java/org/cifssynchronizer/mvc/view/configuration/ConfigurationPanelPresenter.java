@@ -21,7 +21,7 @@ import org.cifssynchronizer.dao.models.Configuration;
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
 public class ConfigurationPanelPresenter {
-    private final ConfigurationPanelView configurationPanelView;
+    public final ConfigurationPanelView configurationPanelView;
     DAOSynchronizer daoSynchronizer;
 
     public ConfigurationPanelPresenter(ConfigurationPanelView configurationPanelView) {
@@ -78,7 +78,6 @@ public class ConfigurationPanelPresenter {
 
                 alert.showAndWait();
             }
-            // synchronizerView.updateConfigurationCBox();
         });
 
         configurationPanelView.confTableView.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {

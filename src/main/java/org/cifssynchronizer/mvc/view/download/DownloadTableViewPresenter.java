@@ -1,5 +1,7 @@
 package org.cifssynchronizer.mvc.view.download;
 
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ScrollPane;
@@ -10,6 +12,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.cifssynchronizer.mvc.model.DownloadTask;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Author Rigoberto Leander Salgado Reyes <rlsalgado2006@gmail.com>
@@ -23,28 +30,46 @@ import javafx.stage.Stage;
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
 public class DownloadTableViewPresenter {
-    DownloadsTableView tableView;
-    Dialog dialog;
-    DownloadManager manager;
-    ScrollPane scrollPane;
+    private final DownloadsTableView tableView;
+    private final DownloadManagerPresenter managerPresenter;
+    private final ScrollPane scrollPane;
+    private Dialog dialog;
+    public SimpleBooleanProperty managerIsVisible;
 
     public DownloadTableViewPresenter(DownloadsTableView tableView) {
         this.tableView = tableView;
-        manager = new DownloadManager();
+        DownloadManagerView managerView = new DownloadManagerView();
+        managerPresenter = new DownloadManagerPresenter(managerView);
         scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
-        scrollPane.setContent(manager);
+        scrollPane.setContent(managerView);
+        managerIsVisible = new SimpleBooleanProperty(false);
 
         attachEvents();
     }
 
     private void attachEvents() {
-        initDialog();
-
         tableView.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2) {
-                manager.addDownload(tableView.getSelectionModel().getSelectedItem());
-                dialog.show();
+                if (tableView.getSelectionModel().getSelectedItem() != null) {
+                    final SimpleBooleanProperty addDownload = new SimpleBooleanProperty(true);
+                    if (fileExist(tableView.getSelectionModel().getSelectedItem())) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING,
+                                "Destination file exist, do you want to overwrite it?", ButtonType.OK, ButtonType.CANCEL);
+                        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                        alert.setResizable(true);
+                        stage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
+                        alert.setTitle("Warning");
+                        alert.showAndWait().filter(b -> b != ButtonType.OK).ifPresent(b -> addDownload.set(false));
+                    }
+
+                    if (addDownload.get()) {
+                        managerPresenter.addDownload(tableView.getSelectionModel().getSelectedItem());
+                        initDialog();
+                        dialog.show();
+                        managerIsVisible.set(true);
+                    }
+                }
             }
         });
     }
@@ -67,10 +92,17 @@ public class DownloadTableViewPresenter {
         });
 
         dialog.getDialogPane().setContent(scrollPane);
+        dialog.setOnCloseRequest(e -> managerIsVisible.set(false));
+    }
 
-        //todo add close event to de dialog.
-        dialog.setOnCloseRequest(e -> {
-            System.out.println("cerrando!");
-        });
+    public void showManager(){
+        initDialog();
+        dialog.show();
+        managerIsVisible.set(true);
+    }
+
+    private boolean fileExist(DownloadTask selectedItem) {
+        final Path path = Paths.get(selectedItem.getDownloadPath(), selectedItem.getName());
+        return Files.exists(path);
     }
 }

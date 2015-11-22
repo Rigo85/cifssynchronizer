@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class ConfigurationPanelView extends BorderPane {
 
-    TableView<Configuration> confTableView;
+    public TableView<Configuration> confTableView;
     Button addButton;
     Button editButton;
     Button removeButton;
@@ -64,9 +64,11 @@ public class ConfigurationPanelView extends BorderPane {
         confTableView = new TableView<>();
 
         TableColumn<Configuration, String> smbPathCol = new TableColumn<>("Smb Path");
+        smbPathCol.setPrefWidth(250);
         smbPathCol.setCellValueFactory(new PropertyValueFactory<>("smbPath"));
 
         TableColumn<Configuration, Long> synchronizationCol = new TableColumn<>("Last Synchronization");
+        synchronizationCol.setPrefWidth(250);
         synchronizationCol.setCellValueFactory(new PropertyValueFactory<>("lastSynchronization"));
 
         synchronizationCol.setCellFactory(column -> new TableCell<Configuration, Long>() {
@@ -80,9 +82,11 @@ public class ConfigurationPanelView extends BorderPane {
         });
 
         TableColumn<Configuration, String> downloadCol = new TableColumn<>("Download Path");
+        downloadCol.setPrefWidth(250);
         downloadCol.setCellValueFactory(new PropertyValueFactory<>("downloadPath"));
 
         TableColumn<Configuration, Credential> credentialCol = new TableColumn<>("Credential");
+        credentialCol.setPrefWidth(250);
         credentialCol.setCellValueFactory(new PropertyValueFactory<>("credential"));
 
         confTableView.getColumns().add(smbPathCol);

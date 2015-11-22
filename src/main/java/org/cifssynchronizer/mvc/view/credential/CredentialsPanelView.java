@@ -60,9 +60,11 @@ public class CredentialsPanelView extends BorderPane {
         credentialTableView = new TableView<>();
 
         TableColumn<Credential, String> usernameCol = new TableColumn<>("Username");
+        usernameCol.setPrefWidth(250);
         usernameCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
 
         TableColumn<Credential, String> domainCol = new TableColumn<>("Domain");
+        domainCol.setPrefWidth(250);
         domainCol.setCellValueFactory(new PropertyValueFactory<>("domainName"));
 
         credentialTableView.getColumns().add(usernameCol);

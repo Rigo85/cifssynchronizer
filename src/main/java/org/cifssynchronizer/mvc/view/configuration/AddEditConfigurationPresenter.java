@@ -71,14 +71,16 @@ public class AddEditConfigurationPresenter {
         });
 
         configurationView.resetButton.setOnAction(e -> {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Are you sure to reset the last synchronization date?", ButtonType.OK, ButtonType.CANCEL);
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
-            alert.setResizable(true);
-            alert.showAndWait().filter(b -> b == ButtonType.OK).ifPresent(x -> {
-                configurationView.lastSynchronizationText.setValue(LocalDate.ofEpochDay(0l));
-                change.set(true);
-            });
+            if(!configurationView.lastSynchronizationText.getValue().isEqual(LocalDate.ofEpochDay(0l))){
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Are you sure to reset the last synchronization date?", ButtonType.OK, ButtonType.CANCEL);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
+                alert.setResizable(true);
+                alert.showAndWait().filter(b -> b == ButtonType.OK).ifPresent(x -> {
+                    configurationView.lastSynchronizationText.setValue(LocalDate.ofEpochDay(0l));
+                    change.set(true);
+                });
+            }
         });
 
         configurationView.credentialComboBox.getItems().addAll(daoSynchronizer.getCredentialJpaController().findCredentialEntities());
@@ -104,6 +106,7 @@ public class AddEditConfigurationPresenter {
 
     public void show() {
         dialog.setTitle(configuration == null ? "Add Configuration" : "Edit Configuration");
+        dialog.getDialogPane().setContent(configurationView);
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.setResizable(true);
 
@@ -114,7 +117,7 @@ public class AddEditConfigurationPresenter {
         dialog.getDialogPane().getButtonTypes().addAll(addEditBT, ButtonType.CANCEL);
 
         dialog.setOnCloseRequest(e -> {
-            if (change.getValue()) {
+            if (change.getValue() && configuration != null) {
                 Alert alert = new Alert(Alert.AlertType.WARNING,
                         "The \"last synchronization\" has change, do you want to save it?", ButtonType.OK, ButtonType.CANCEL);
                 Stage stage2 = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -123,17 +126,12 @@ public class AddEditConfigurationPresenter {
                 alert.setResizable(true);
                 alert.showAndWait().filter(b -> b == ButtonType.OK).ifPresent(x -> {
                             try {
-                                if (configuration != null) {
-                                    configuration.setCredential(configurationView.credentialComboBox.getValue());
-                                    configuration.setDownloadPath(configurationView.downloadPathText.getText());
-                                    configuration.setLastSynchronization(configurationView.lastSynchronizationText.getValue().toEpochDay());
-                                    configuration.setSmbPath(configurationView.smbPathText.getText());
-
-                                    daoSynchronizer.getConfigurationJpaController().edit(configuration);
-                                    change.set(false);
-                                    //todo alert the main view!!!!
-                                    //  synchronizerView.updateConfigurationCBox();
-                                }
+                                configuration.setCredential(configurationView.credentialComboBox.getValue());
+                                configuration.setDownloadPath(configurationView.downloadPathText.getText());
+                                configuration.setLastSynchronization(configurationView.lastSynchronizationText.getValue().toEpochDay());
+                                configuration.setSmbPath(configurationView.smbPathText.getText());
+                                daoSynchronizer.getConfigurationJpaController().edit(configuration);
+                                change.set(false);
                             } catch (Exception e1) {
                                 Alert alert1 = new Alert(Alert.AlertType.ERROR, e1.getMessage(), ButtonType.OK);
                                 Stage stage1 = (Stage) alert1.getDialogPane().getScene().getWindow();
@@ -154,6 +152,8 @@ public class AddEditConfigurationPresenter {
 
         final Button addEdit = (Button) dialog.getDialogPane().lookupButton(addEditBT);
         addEdit.addEventFilter(ActionEvent.ACTION, this::AddEditOnAction);
+
+        dialog.showAndWait();
     }
 
     private void AddEditOnAction(ActionEvent event) {
@@ -180,8 +180,6 @@ public class AddEditConfigurationPresenter {
                                 configurationView.downloadPathText.getText(), configurationView.credentialComboBox.getValue()));
             }
             change.setValue(false);
-            //todo alert the main view!!!!
-            //synchronizerView.updateConfigurationCBox();
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();

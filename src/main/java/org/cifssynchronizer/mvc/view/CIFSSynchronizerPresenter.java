@@ -1,6 +1,7 @@
 package org.cifssynchronizer.mvc.view;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Worker;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -12,12 +13,11 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-import org.cifssynchronizer.core.SynchronizerCore;
+import org.cifssynchronizer.core.CIFSSynchronizerCore;
 import org.cifssynchronizer.dao.controllers.DAOSynchronizer;
 import org.cifssynchronizer.dao.models.Configuration;
 import org.cifssynchronizer.mvc.model.DownloadTask;
-import org.cifssynchronizer.mvc.model.UpdateTask;
+import org.cifssynchronizer.mvc.model.UpdateService;
 import org.cifssynchronizer.mvc.view.configuration.ConfigurationPanelPresenter;
 import org.cifssynchronizer.mvc.view.configuration.ConfigurationPanelView;
 import org.cifssynchronizer.mvc.view.credential.CredentialsPanelPresenter;
@@ -42,21 +42,23 @@ import java.util.stream.Collectors;
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
 public class CIFSSynchronizerPresenter {
-    final CIFSSynchronizerView synchronizerView;
+    final CIFSSynchronizerView cifsSynchronizerView;
     DAOSynchronizer daoSynchronizer;
-    UpdateTask updateTask;
+    UpdateService updateTask;
+    // UpdateTask updateTask;
+    AtomicInteger counter;
 
-    public CIFSSynchronizerPresenter(CIFSSynchronizerView synchronizerView) {
-        this.synchronizerView = synchronizerView;
-
-        updateTask = new UpdateTask();
+    public CIFSSynchronizerPresenter(CIFSSynchronizerView cifsSynchronizerView) {
+        this.cifsSynchronizerView = cifsSynchronizerView;
+        counter = new AtomicInteger(1);
+        updateTask = new UpdateService();
 
         try {
             daoSynchronizer = DAOSynchronizer.getInstance();
         } catch (Exception e) {
             if (e.getMessage().contains("Failed to start database")) {
                 Alert alert = new Alert(Alert.AlertType.ERROR,
-                        " Other software is using the database,\ncheck if you have another synchronizer open!", ButtonType.OK);
+                        "Other software is using the database,\ncheck if you have another synchronizer open!", ButtonType.OK);
                 final Stage window = (Stage) alert.getDialogPane().getScene().getWindow();
                 window.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
                 alert.showAndWait();
@@ -70,15 +72,19 @@ public class CIFSSynchronizerPresenter {
     }
 
     private void attachEvents() {
-        synchronizerView.configurationComboBox.getItems()
+        cifsSynchronizerView.showDownloadManager.disableProperty().bind(cifsSynchronizerView.downloadTableViewPresenter.managerIsVisible);
+
+        cifsSynchronizerView.showDownloadManager.setOnAction(e -> cifsSynchronizerView.downloadTableViewPresenter.showManager());
+
+        cifsSynchronizerView.configurationComboBox.getItems()
                 .addAll(daoSynchronizer.getConfigurationJpaController().findConfigurationEntities());
 
-        synchronizerView.updateButton.setOnAction(e -> updateAction());
-        synchronizerView.updateButton.disableProperty().bind(updateTask.stateProperty().isEqualTo(Worker.State.RUNNING));
+        cifsSynchronizerView.updateButton.setOnAction(e -> updateAction());
+        cifsSynchronizerView.updateButton.disableProperty().bind(updateTask.stateProperty().isEqualTo(Worker.State.RUNNING));
 
-        synchronizerView.settings.setOnAction(e -> settingsAction());
+        cifsSynchronizerView.settings.setOnAction(e -> settingsAction());
 
-        synchronizerView.exit.setOnAction(e -> {
+        cifsSynchronizerView.exit.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to exit?", ButtonType.YES, ButtonType.CANCEL);
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
             stage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
@@ -87,12 +93,22 @@ public class CIFSSynchronizerPresenter {
             if (result.get() == ButtonType.YES) Platform.exit();
         });
 
-        synchronizerView.about.setOnAction(e -> {
-            //todo improve about dialog.
+        cifsSynchronizerView.about.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            alert.setResizable(true);
+            alert.getDialogPane().setPrefSize(600, 300);
             stage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
-            alert.setHeaderText("Rigoberto L. Salgado Reyes <rlsalgado2006@gmail.com>");
+            alert.setHeaderText("CIFS Synchronizer");
+            alert.setContentText("Author Rigoberto Leander Salgado Reyes <rlsalgado2006@gmail.com>" +
+                    "\n\n" +
+                    "Copyright 2015 by Rigoberto Leander Salgado Reyes." +
+                    "\n" +
+                    "This program is licensed to you under the terms of version 3 of the\n" +
+                    "GNU Affero General Public License. This program is distributed WITHOUT\n" +
+                    "ANY EXPRESS OR IMPLIED WARRANTY, INCLUDING THOSE OF NON-INFRINGEMENT,\n" +
+                    "MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the\n" +
+                    "AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.");
             alert.setTitle("About Dialog");
             alert.showAndWait();
         });
@@ -110,6 +126,8 @@ public class CIFSSynchronizerPresenter {
         configurationTab.setClosable(false);
         ConfigurationPanelView configurationPanelView = new ConfigurationPanelView();
         ConfigurationPanelPresenter configurationPanelPresenter = new ConfigurationPanelPresenter(configurationPanelView);
+        Bindings.bindContent(cifsSynchronizerView.configurationComboBox.getItems(),
+                configurationPanelPresenter.configurationPanelView.confTableView.getItems());
         configurationTab.setContent(configurationPanelView);
 
         Tab credentialsTab = new Tab("Credentials");
@@ -145,26 +163,39 @@ public class CIFSSynchronizerPresenter {
     }
 
     private void updateAction() {
-        final Configuration configuration = synchronizerView.configurationComboBox.getValue();
+        final Configuration configuration = cifsSynchronizerView.configurationComboBox.getValue();
+        cifsSynchronizerView.downloadsTableView.getItems().clear();
 
         if (configuration != null) {
-            SynchronizerCore synchronizerCore = new SynchronizerCore(configuration);
-            updateTask.setSynchronizerCore(synchronizerCore);
-            updateTask.setOnSucceeded(e -> {
-                final List<SmbFile> filesList = (List<SmbFile>) e.getSource().getValue();
-                onSucceedUpdate(filesList, configuration, synchronizerCore);
+            CIFSSynchronizerCore cifsSynchronizerCore = new CIFSSynchronizerCore(configuration);
+            updateTask.setCifsSynchronizerCore(cifsSynchronizerCore);
+
+            updateTask.valueProperty().addListener((observable, oldValue, sf) -> {
+                if (sf != null) {
+                    try {
+                        final DownloadTask task = new DownloadTask(cifsSynchronizerCore.getNtlmPasswordAuthentication(),
+                                counter.getAndIncrement(), sf.getName(), sf.getCanonicalPath(), sf.length(),
+                                new Date(sf.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                                configuration.getDownloadPath());
+                        cifsSynchronizerView.downloadsTableView.getItems().add(task);
+                        updateTask.canContinue.setValue(true);
+                    } catch (SmbException ignored) {
+                    }
+                }
             });
 
-            Thread backgroundThread = new Thread(updateTask);
-            backgroundThread.setDaemon(true);
-            backgroundThread.start();
-        } else {
-            synchronizerView.downloadsTableView.getItems().clear();
+            updateTask.setOnSucceeded(e -> onSucceedUpdate(configuration, cifsSynchronizerCore));
+            counter.set(1);
+
+            if (updateTask.getState() == Worker.State.SUCCEEDED ||
+                    updateTask.getState() == Worker.State.FAILED ||
+                    updateTask.getState() == Worker.State.CANCELLED) updateTask.reset();
+            updateTask.start();
         }
     }
 
-    private void onSucceedUpdate(List<SmbFile> filesList, Configuration configuration, SynchronizerCore synchronizerCore) {
-        final List<String> errorList = synchronizerCore.getErrorList();
+    private void onSucceedUpdate(Configuration configuration, CIFSSynchronizerCore cifsSynchronizerCore) {
+        final List<String> errorList = cifsSynchronizerCore.getErrorList();
         if (!errorList.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -190,21 +221,7 @@ public class CIFSSynchronizerPresenter {
             alert.getDialogPane().setExpandableContent(expContent);
 
             alert.showAndWait();
-            synchronizerView.downloadsTableView.getItems().clear();
-        } else {
-            AtomicInteger counter = new AtomicInteger(1);
-            final List<DownloadTask> collect = filesList.stream().map(sf -> {
-                try {
-                    return new DownloadTask(synchronizerCore.getNtlmPasswordAuthentication(),
-                            counter.getAndIncrement(), sf.getName(), sf.getCanonicalPath(), sf.length(),
-                            new Date(sf.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                } catch (SmbException e) {
-                    return null;
-                }
-            }).filter(d -> d != null).collect(Collectors.toList());
-
-            synchronizerView.downloadsTableView.getItems().clear();
-            synchronizerView.downloadsTableView.getItems().addAll(collect);
+            cifsSynchronizerView.downloadsTableView.getItems().clear();
         }
     }
 }

@@ -1,6 +1,6 @@
 # CIFS Synchronizer
 
-Software for changes in shares via CIFS Common Internet File System(CIFS).
+Software for changes in shares via Common Internet File System(CIFS).
 
 ## Solution
 

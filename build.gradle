@@ -16,9 +16,7 @@ allprojects {
     version '0.1'
 
     repositories {
-        maven { url = 'http://maven.prod.uci.cu/nexus/content/groups/public/' }
-        maven { url = 'http://maven.prod.uci.cu/nexus/content/repositories/' }
-        maven { url = 'http://maven.prod.uci.cu/nexus/content/repositories/clojars.org/' }
+       mavenCentral()
     }
 
 }

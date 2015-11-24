@@ -16,7 +16,7 @@ allprojects {
     version '0.1'
 
     repositories {
-       mavenCentral()
+        mavenCentral()
     }
 
 }
@@ -59,14 +59,18 @@ task run(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
-//task fatJar(type: Jar) {
-//    manifest {
-//        attributes 'Implementation-Title': 'CIFSSynchronizer',
-//                   'Implementation-Version': version,
-//                   'Main-Class': 'org.cifssynchronizer.mvc.CIFSSynchronizerApp'
-//    }
-//    baseName = project.name + '-all'
-//    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-//    with jar
-//}
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'CIFSSynchronizer',
+                'Implementation-Version': version,
+                'Main-Class': 'org.cifssynchronizer.mvc.CIFSSynchronizerApp'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }{
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
 

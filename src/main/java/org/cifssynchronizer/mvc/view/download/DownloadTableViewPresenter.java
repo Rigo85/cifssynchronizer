@@ -30,11 +30,11 @@ import java.nio.file.Paths;
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
 public class DownloadTableViewPresenter {
+    public final SimpleBooleanProperty managerIsVisible;
     private final DownloadsTableView tableView;
     private final DownloadManagerPresenter managerPresenter;
     private final ScrollPane scrollPane;
     private Dialog dialog;
-    public final SimpleBooleanProperty managerIsVisible;
 
     public DownloadTableViewPresenter(DownloadsTableView tableView) {
         this.tableView = tableView;
@@ -44,6 +44,7 @@ public class DownloadTableViewPresenter {
         scrollPane.setFitToWidth(true);
         scrollPane.setContent(managerView);
         managerIsVisible = new SimpleBooleanProperty(false);
+        dialog = null;
 
         attachEvents();
     }
@@ -65,9 +66,7 @@ public class DownloadTableViewPresenter {
 
                     if (addDownload.get()) {
                         managerPresenter.addDownload(tableView.getSelectionModel().getSelectedItem());
-                        initDialog();
-                        dialog.show();
-                        managerIsVisible.set(true);
+                        showManager();
                     }
                 }
             }
@@ -95,10 +94,11 @@ public class DownloadTableViewPresenter {
         dialog.setOnCloseRequest(e -> managerIsVisible.set(false));
     }
 
-    public void showManager(){
-        initDialog();
-        dialog.show();
+    public void showManager() {
+        if (dialog == null)
+            initDialog();
         managerIsVisible.set(true);
+        dialog.show();
     }
 
     private boolean fileExist(DownloadTask selectedItem) {

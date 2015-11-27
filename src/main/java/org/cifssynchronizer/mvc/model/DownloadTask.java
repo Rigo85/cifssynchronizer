@@ -42,12 +42,12 @@ public class DownloadTask extends Task<SimpleLongProperty> {
         this.size = size;
         this.lastModification = lastModification;
         this.downloadPath = downloadPath;
-        result = new SimpleLongProperty(0l);
+        result = new SimpleLongProperty(0L);
     }
 
     @Override
     protected SimpleLongProperty call() throws Exception {
-        long counter = 0l;
+        long counter = 0L;
         SmbFile remoteFile = new SmbFile(smbPath, auth);
         Path output = Paths.get(downloadPath, name);
         InputStream is;

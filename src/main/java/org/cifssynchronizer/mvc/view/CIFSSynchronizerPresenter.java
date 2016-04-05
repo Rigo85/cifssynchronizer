@@ -93,7 +93,8 @@ public class CIFSSynchronizerPresenter {
         cifsSynchronizerView.searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 final FilteredList<DownloadTask> filtered =
-                        list.filtered(dt -> dt.getName().toLowerCase().contains(newValue.trim().toLowerCase()));
+                        list.filtered(dt -> dt.getName().toLowerCase().contains(newValue.trim().toLowerCase()) ||
+                                dt.getSmbPath().toLowerCase().contains(newValue.trim().toLowerCase()));
                 cifsSynchronizerView.downloadsTableView.setItems(filtered);
             } else {
                 cifsSynchronizerView.downloadsTableView.setItems(list);
@@ -178,6 +179,9 @@ public class CIFSSynchronizerPresenter {
         });
 
         dialog.showAndWait();
+        cifsSynchronizerView.configurationComboBox.getItems().clear();
+        cifsSynchronizerView.configurationComboBox.getItems()
+                .addAll(daoSynchronizer.getConfigurationJpaController().findConfigurationEntities());
     }
 
     private void updateAction() {
@@ -190,17 +194,20 @@ public class CIFSSynchronizerPresenter {
             updateTask.setCifsSynchronizerCore(cifsSynchronizerCore);
 
             if (updateTask.getState() == Worker.State.READY) {
-                updateTask.valueProperty().addListener((observable, oldValue, sf) -> {
-                    if (sf != null) {
-                        try {
-                            final DownloadTask task = new DownloadTask(cifsSynchronizerCore.getNtlmPasswordAuthentication(),
-                                    counter.getAndIncrement(), sf.getName(), sf.getCanonicalPath(), sf.length(),
-                                    new Date(sf.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-                                    configuration.getDownloadPath());
-                            cifsSynchronizerView.downloadsTableView.getItems().add(task);
-                            updateTask.canContinue.setValue(true);
-                        } catch (SmbException ignored) {
-                        }
+                updateTask.valueProperty().addListener((observable, oldValue, smbFiles) -> {
+                    if (smbFiles != null) {
+                        smbFiles.stream().forEach(smbFile -> {
+                            try {
+                                cifsSynchronizerView.downloadsTableView
+                                        .getItems()
+                                        .add(new DownloadTask(cifsSynchronizerCore.getNtlmPasswordAuthentication(),
+                                                counter.getAndIncrement(), smbFile.getName(), smbFile.getCanonicalPath(),
+                                                smbFile.length(),
+                                                new Date(smbFile.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                                                configuration.getDownloadPath()));
+                            } catch (SmbException e) {
+                            }
+                        });
                     }
                 });
             }

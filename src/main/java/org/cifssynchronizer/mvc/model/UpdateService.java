@@ -5,7 +5,8 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import jcifs.smb.SmbFile;
 import org.cifssynchronizer.core.CIFSSynchronizerCore;
-import rx.Subscriber;
+
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Author Rigoberto Leander Salgado Reyes <rlsalgado2006@gmail.com>
@@ -18,7 +19,7 @@ import rx.Subscriber;
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Please refer to the
  * AGPL (http:www.gnu.org/licenses/agpl-3.0.txt) for more details.
  */
-public class UpdateService extends Service<SmbFile> {
+public class UpdateService extends Service<ConcurrentLinkedDeque<SmbFile>> {
     public final SimpleBooleanProperty canContinue;
     private CIFSSynchronizerCore cifsSynchronizerCore;
 
@@ -30,34 +31,12 @@ public class UpdateService extends Service<SmbFile> {
     }
 
     @Override
-    protected Task<SmbFile> createTask() {
-        return new Task<SmbFile>() {
+    protected Task<ConcurrentLinkedDeque<SmbFile>> createTask() {
+        return new Task<ConcurrentLinkedDeque<SmbFile>>() {
             @Override
-            protected SmbFile call() throws Exception {
+            protected ConcurrentLinkedDeque<SmbFile> call() throws Exception {
                 if (cifsSynchronizerCore != null) {
-                    cifsSynchronizerCore.produceFiles().subscribe(new Subscriber<SmbFile>() {
-                        @Override
-                        public void onStart() {
-                            request(1);
-                        }
-
-                        @Override
-                        public void onCompleted() {
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                        }
-
-                        @Override
-                        public void onNext(SmbFile sf) {
-                            canContinue.set(false);
-                            updateValue(sf);
-                            while (!canContinue.getValue()) {
-                            }
-                            request(1);
-                        }
-                    });
+                    return cifsSynchronizerCore.produceFiles();
                 }
                 return null;
             }

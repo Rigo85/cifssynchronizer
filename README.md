@@ -7,7 +7,6 @@ Software for changes in shares via Common Internet File System(CIFS).
 The software was built with:
 - Oracle JDK 1.8_60
 - JavaFX 8
-- RxJava
 - JPA
 - Apache Derby
 - gson

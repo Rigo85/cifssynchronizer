@@ -33,9 +33,11 @@ public class CIFSSynchronizerCore {
     final private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
     final private ExecutorService threadPool = Executors.newFixedThreadPool(25);
     final private AtomicInteger counter = new AtomicInteger(0);
+    private final Configuration configuration;
     private String smbPath;
 
     public CIFSSynchronizerCore(Configuration configuration) {
+        this.configuration = configuration;
         errorList = new LinkedList<>();
         Keys keys = Utils.loadKeys();
 
@@ -76,7 +78,8 @@ public class CIFSSynchronizerCore {
                         if (url.equals(KILL)) {
                             return;
                         }
-                        threadPool.execute(new Worker(files, queue, ntlmPasswordAuthentication, url, counter, errorList));
+                        threadPool.execute(new Worker(files, queue, ntlmPasswordAuthentication, url, counter, errorList,
+                                configuration.getLastSynchronization()));
                     } catch (InterruptedException e) {
                         errorList.add(e.getMessage());
                     }

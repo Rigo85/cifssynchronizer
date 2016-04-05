@@ -5,7 +5,10 @@ import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -27,21 +30,24 @@ import java.util.stream.Collectors;
 class Worker implements Runnable {
 
     final private List<String> errorList;
+    private final long lastSynchronization;
     private ConcurrentLinkedDeque<SmbFile> files;
     private LinkedBlockingQueue<String> queue;
     private NtlmPasswordAuthentication auth;
     private String url;
     private AtomicInteger counter;
 
+
     Worker(ConcurrentLinkedDeque<SmbFile> files, LinkedBlockingQueue<String> queue,
            NtlmPasswordAuthentication auth, String url, AtomicInteger counter,
-           List<String> errorList) {
+           List<String> errorList, long lastSynchronization) {
         this.files = files;
         this.queue = queue;
         this.auth = auth;
         this.url = url;
         this.counter = counter;
         this.errorList = errorList;
+        this.lastSynchronization = lastSynchronization;
     }
 
     private boolean isDirectory(SmbFile smbFile) {
@@ -61,11 +67,17 @@ class Worker implements Runnable {
         }
     }
 
+    private boolean filterDate(SmbFile smbFile){
+        LocalDate input = new Date(smbFile.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return !input.isBefore(LocalDate.ofEpochDay(lastSynchronization));
+    }
+
     @Override
     public void run() {
         counter.incrementAndGet();
         try {
             final Map<Boolean, List<SmbFile>> groups = Arrays.stream(new SmbFile(url, auth).listFiles())
+                    .filter(this::filterDate)
                     .collect(Collectors.partitioningBy(this::isDirectory));
 
             files.addAll(groups.get(Boolean.FALSE));

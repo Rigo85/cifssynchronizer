@@ -93,8 +93,7 @@ public class CIFSSynchronizerPresenter {
         cifsSynchronizerView.searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 final FilteredList<DownloadTask> filtered =
-                        list.filtered(dt -> dt.getName().toLowerCase().contains(newValue.trim().toLowerCase()) ||
-                                dt.getSmbPath().toLowerCase().contains(newValue.trim().toLowerCase()));
+                        list.filtered(dt -> dt.getSmbPath().toLowerCase().contains(newValue.trim().toLowerCase()));
                 cifsSynchronizerView.downloadsTableView.setItems(filtered);
             } else {
                 cifsSynchronizerView.downloadsTableView.setItems(list);
